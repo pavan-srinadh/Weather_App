@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- ========================================================= -->
+<!-- ======================= HEAD ============================ -->
+<!-- ========================================================= -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Animated Weather App</title>
+
+    <!-- ===================== GOOGLE FONT ======================= -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- ========================================================= -->
+    <!-- ======================= STYLE =========================== -->
+    <!-- ========================================================= -->
+    <style>
+        /* ========================================================= */
+        /* ====================== RESET ============================= */
+        /* ========================================================= */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        /* ========================================================= */
+        /* ====================== BODY ============================== */
+        /* ========================================================= */
+        
+        body {
+            min-height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(#87ceeb, #e0f6ff);
+            transition: background 1s ease;
+        }
+        /* ========================================================= */
+        /* ================= WEATHER SCENE ========================== */
+        /* ========================================================= */
+        
+        .scene {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            overflow: hidden;
+        }
+        /* ========================================================= */
+        /* ======================= SUN ============================== */
+        /* ========================================================= */
+        
+        .sun {
+            position: absolute;
+            top: 80px;
+            right: 100px;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ffe066, #ff9f1c);
+            box-shadow: 0 0 120px rgba(255, 200, 0, 0.8);
+            display: none;
+            animation: sunPulse 6s infinite alternate;
+        }
+        
+        @keyframes sunPulse {
+            from {
+                box-shadow: 0 0 80px rgba(255, 200, 0, 0.6);
+            }
+            to {
+                box-shadow: 0 0 160px rgba(255, 200, 0, 1);
+            }
+        }
+        /* ========================================================= */
+        /* ======================= CLOUDS =========================== */
+        /* ========================================================= */
+        
+        .cloud {
+            position: absolute;
+            top: 120px;
+            left: -300px;
+            width: 280px;
+            height: 90px;
+            background: #fff;
+            border-radius: 50px;
+            opacity: 0.95;
+            display: none;
+            animation: cloudMove 30s linear infinite;
+        }
+        
+        .cloud::before,
+        .cloud::after {
+            content: "";
+            position: absolute;
+            background: #fff;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            top: -60px;
+        }
+        
+        .cloud::before {
+            left: 30px;
+        }
+        
+        .cloud::after {
+            right: 30px;
+        }
+        
+        @keyframes cloudMove {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(140vw);
+            }
+        }
+        /* ========================================================= */
+        /* ======================= RAIN ============================= */
+        /* ========================================================= */
+        
+        .rain {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            display: none;
+        }
+        
+        .rain::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: repeating-linear-gradient( 120deg, rgba(255, 255, 255, 0.4) 0px, rgba(255, 255, 255, 0.4) 1px, transparent 1px, transparent 20px);
+            animation: rainFall 0.35s linear infinite;
+        }
+        
+        @keyframes rainFall {
+            from {
+                background-position: 0 0;
+            }
+            to {
+                background-position: 0 100%;
+            }
+        }
+        /* ========================================================= */
+        /* ======================= THUNDER ========================== */
+        /* ========================================================= */
+        
+        .thunder {
+            position: absolute;
+            inset: 0;
+            display: none;
+            background: rgba(0, 0, 0, 0.4);
+            animation: lightning 5s infinite;
+        }
+        
+        @keyframes lightning {
+            0%,
+            93%,
+            100% {
+                background: rgba(0, 0, 0, 0.5);
+            }
+            94% {
+                background: rgba(255, 255, 255, 0.8);
+            }
+            95% {
+                background: rgba(0, 0, 0, 0.6);
+            }
+        }
+        /* ========================================================= */
+        /* ======================= CARD ============================= */
+        /* ========================================================= */
+        
+        .card {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 420px;
+            margin: 80px auto;
+            padding: 40px 30px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(14px);
+            color: #fff;
+            text-align: center;
+        }
+        /* ========================================================= */
+        /* ======================= SEARCH =========================== */
+        /* ========================================================= */
+        
+        .search {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search input {
+            flex: 1;
+            padding: 14px;
+            border-radius: 25px;
+            border: none;
+            outline: none;
+        }
+        
+        .search button {
+            width: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        /* ========================================================= */
+        /* ======================= WEATHER ========================== */
+        /* ========================================================= */
+        
+        .weather {
+            display: none;
+            margin-top: 25px;
+        }
+        
+        .weather h1 {
+            font-size: 64px;
+        }
+        
+        .weather h2 {
+            font-size: 28px;
+        }
+        /* ========================================================= */
+        /* ======================= DETAILS ========================== */
+        /* ========================================================= */
+        
+        .details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .details div {
+            text-align: center;
+        }
+        /* ========================================================= */
+        /* ======================= ERROR ============================ */
+        /* ========================================================= */
+        
+        .error {
+            display: none;
+            margin-top: 10px;
+            color: #ffb3b3;
+        }
+        /* ========================================================= */
+        /* ================= WEATHER BACKGROUNDS ==================== */
+        /* ========================================================= */
+        
+        body.clear {
+            background: linear-gradient(#4facfe, #00f2fe);
+        }
+        
+        body.clouds {
+            background: linear-gradient(#bdc3c7, #2c3e50);
+        }
+        
+        body.rainy {
+            background: linear-gradient(#2c3e50, #3498db);
+        }
+        
+        body.thunderstorm {
+            background: linear-gradient(#000000, #2c3e50);
+        }
+    </style>
+</head>
+
+<!-- ========================================================= -->
+<!-- ======================= BODY ============================ -->
+<!-- ========================================================= -->
+
+<body>
+
+    <!-- ======================= SCENE ========================== -->
+    <div class="scene">
+        <div class="sun"></div>
+        <div class="cloud"></div>
+        <div class="rain"></div>
+        <div class="thunder"></div>
+    </div>
+
+    <!-- ======================= CARD =========================== -->
+    <div class="card">
+
+        <div class="search">
+            <input type="text" placeholder="Enter city">
+            <button>🔍</button>
+        </div>
+
+        <div class="error">City not found</div>
+
+        <div class="weather">
+            <h1 class="temp">--°C</h1>
+            <h2 class="city">City</h2>
+
+            <div class="details">
+                <div>
+                    <p class="humidity">--%</p>
+                    <p>Humidity</p>
+                </div>
+                <div>
+                    <p class="wind">-- km/h</p>
+                    <p>Wind</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- ======================= SCRIPT ========================== -->
+    <!-- ========================================================= -->
+
+    <script>
+        const apiKey = "1c1cac9b64a33520c8acd446c0b6fdd1";
+        const apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+
+        const input = document.querySelector("input");
+        const button = document.querySelector("button");
+
+        const sun = document.querySelector(".sun");
+        const cloud = document.querySelector(".cloud");
+        const rain = document.querySelector(".rain");
+        const thunder = document.querySelector(".thunder");
+
+        async function fetchWeather(city) {
+            try {
+                const res = await fetch(apiUrl + city + `&appid=${apiKey}`);
+                if (!res.ok) throw new Error();
+
+                const data = await res.json();
+
+                document.querySelector(".temp").innerText = Math.round(data.main.temp) + "°C";
+                document.querySelector(".city").innerText = data.name;
+                document.querySelector(".humidity").innerText = data.main.humidity + "%";
+                document.querySelector(".wind").innerText = data.wind.speed + " km/h";
+
+                document.querySelector(".weather").style.display = "block";
+                document.querySelector(".error").style.display = "none";
+
+                resetScene();
+
+                const condition = data.weather[0].main;
+
+                if (condition === "Clear") {
+                    sun.style.display = "block";
+                    document.body.className = "clear";
+                } else if (condition === "Clouds") {
+                    cloud.style.display = "block";
+                    document.body.className = "clouds";
+                } else if (condition === "Rain" || condition === "Drizzle") {
+                    cloud.style.display = "block";
+                    rain.style.display = "block";
+                    document.body.className = "rainy";
+                } else if (condition === "Thunderstorm") {
+                    cloud.style.display = "block";
+                    rain.style.display = "block";
+                    thunder.style.display = "block";
+                    document.body.className = "thunderstorm";
+                }
+
+            } catch {
+                document.querySelector(".error").style.display = "block";
+                document.querySelector(".weather").style.display = "none";
+            }
+        }
+
+        function resetScene() {
+            sun.style.display = "none";
+            cloud.style.display = "none";
+            rain.style.display = "none";
+            thunder.style.display = "none";
+            document.body.className = "";
+        }
+
+        button.onclick = () => fetchWeather(input.value);
+        input.onkeyup = e => e.key === "Enter" && fetchWeather(input.value);
+    </script>
+
+</body>
+
+</html>
