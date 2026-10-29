@@ -4,7 +4,7 @@
 
 An interactive and visually rich **Weather Application** built using **HTML, CSS, and JavaScript**. This app fetches real-time weather data and dynamically updates the UI with beautiful animations based on current weather conditions.
 
-Link🔗 https://pavanweather-app.netlify.app/
+Link🔗 https://pavan-weather1.netlify.app/
 
 ---
 
